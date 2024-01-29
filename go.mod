@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/gorilla/websocket v1.5.1
 	github.com/robfig/cron/v3 v3.0.1
+	github.com/DesolateYH/libary-yh-go v0.0.4
 )
 
 require (
