@@ -1,30 +1,27 @@
 package main
 
 import (
+	"github.com/DesolateYH/libary-yh-go/logger"
 	"github.com/gorilla/websocket"
-	"log"
+	"go.uber.org/zap"
 )
 
-func sendCommend(conn *websocket.Conn, body Body) Body {
+func sendCommend(conn *websocket.Conn, body Body) (Body, error) {
 	err := conn.WriteJSON(body)
 	if err != nil {
-		log.Fatal(err)
+		logger.Get().Error("fail to write json", zap.Error(err), zap.Any("body", body))
+		return Body{}, err
 	}
-	var response Body
-	err = conn.ReadJSON(&response)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(response)
-	return response
+	return getResp(conn)
 }
 
-func getResp(conn *websocket.Conn) Body {
+func getResp(conn *websocket.Conn) (Body, error) {
 	var response Body
 	err := conn.ReadJSON(&response)
 	if err != nil {
-		log.Fatal(err)
+		logger.Get().Error("fail to read json", zap.Error(err))
+		return Body{}, err
 	}
-	log.Println(response)
-	return response
+	logger.Get().Info("get resp success", zap.Any("resp", response))
+	return response, nil
 }

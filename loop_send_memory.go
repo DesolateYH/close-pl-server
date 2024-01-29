@@ -3,11 +3,13 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/DesolateYH/libary-yh-go/logger"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
-	"log"
 	"time"
 )
+
+const loopTime = time.Second * 10
 
 type statusEventArgs struct {
 	CpuAbsolute      float64 `json:"cpu_absolute"`
@@ -25,24 +27,42 @@ type statusEventArgs struct {
 // {"event":"stats","args":["{\"cpu_absolute\":305.601,\"disk_bytes\":2675046943,\"memory_bytes\":20518100992,\"memory_limit_bytes\":25804800000,\"network\":{\"rx_bytes\":704862335,\"tx_bytes\":3384315373},\"state\":\"running\",\"uptime\":24150801}"]}
 // {"event":"console output","args":["\u003e Broadcast 3"]}
 func loopSendMemory(conn *websocket.Conn) {
+	lastMemoryUsage := float64(0)
+	logger.Get().Info("begin loop send memory")
 	for {
-		resp := getResp(conn)
+		time.Sleep(loopTime)
+		resp, err := getResp(conn)
+		if err != nil {
+			continue
+		}
 		if resp.Event == eventStatus && len(resp.Args) > 0 {
 			var args statusEventArgs
 			err := json.Unmarshal([]byte(resp.Args[0]), &args)
 			if err != nil {
-				log.Println("fail to unmarshal statusEventArgs", zap.Error(err), zap.Any("resp", resp))
+				logger.Get().Error("fail to unmarshal statusEventArgs", zap.Error(err), zap.Any("resp", resp))
 				time.Sleep(time.Second * 10)
 				continue
 			}
 
-			sendCommend(conn, Body{
+			memoryUsage := float64(args.MemoryBytes) / float64(args.MemoryLimitBytes) * 100
+			if memoryUsage < 96 {
+				logger.Get().Info("memory usage is less than 90%", zap.Float64("memoryUsage", memoryUsage))
+				continue
+			}
+			if memoryUsage < lastMemoryUsage {
+				continue
+			}
+
+			lastMemoryUsage = memoryUsage
+			_, err = sendCommend(conn, Body{
 				Event: eventSendCommend,
 				Args: []string{
-					fmt.Sprintf("Broadcast {当前内存使用率: %.2f%%}", float64(args.MemoryBytes)/float64(args.MemoryLimitBytes)*100),
+					fmt.Sprintf("Broadcast current_memory_useage_%.2f%%", memoryUsage),
 				},
 			})
-			time.Sleep(time.Second * 10)
+			if err != nil {
+				continue
+			}
 		}
 	}
 }

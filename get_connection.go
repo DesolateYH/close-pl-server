@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/DesolateYH/libary-yh-go/logger"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
-	"log"
 	"net/http"
 )
 
-func getConnection(token string) *websocket.Conn {
+func getConnection(token string) (*websocket.Conn, error) {
 	dialer := &websocket.Dialer{}
 	header := http.Header{}
 
@@ -28,7 +28,8 @@ func getConnection(token string) *websocket.Conn {
 
 	conn, _, err := dialer.Dial("wss://pt-50.vatzj.com:8082/api/servers/661a539a-b5b5-4955-bcf6-737740a6b270/ws", header)
 	if err != nil {
-		log.Fatalln("fail to get connection", zap.Error(err))
+		logger.Get().Error("fail to dial", zap.Error(err))
+		return nil, err
 	}
 
 	authReq := Body{
@@ -37,10 +38,14 @@ func getConnection(token string) *websocket.Conn {
 			token,
 		},
 	}
-	authResp := sendCommend(conn, authReq)
+	authResp, err := sendCommend(conn, authReq)
+	if err != nil {
+		return nil, err
+	}
 	if authResp.Event != eventAuthSuccess {
-		log.Fatalln("fail to auth", zap.Any("resp", authResp))
+		logger.Get().Error("fail to auth", zap.Any("resp", authResp))
+		return nil, FailToAuthError
 	}
 
-	return conn
+	return conn, nil
 }
