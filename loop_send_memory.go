@@ -45,8 +45,8 @@ func loopSendMemory(conn *websocket.Conn) {
 			}
 
 			memoryUsage := float64(args.MemoryBytes) / float64(args.MemoryLimitBytes) * 100
-			if memoryUsage < 96 {
-				logger.Get().Info("memory usage is less than 90%", zap.Float64("memoryUsage", memoryUsage))
+			if memoryUsage < 95 {
+				logger.Get().Info("memory usage is less than 95%", zap.Float64("memoryUsage", memoryUsage))
 				continue
 			}
 			if memoryUsage < lastMemoryUsage {
