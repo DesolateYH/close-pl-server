@@ -22,6 +22,11 @@ func getResp(conn *websocket.Conn) (Body, error) {
 		logger.Get().Error("fail to read json", zap.Error(err))
 		return Body{}, err
 	}
+	if response.Event == eventDaemonError {
+		logger.Get().Warn("daemon error", zap.Any("args", response.Args))
+		return Body{}, TokenExpireError
+	}
+
 	logger.Get().Info("get resp success", zap.Any("resp", response))
 	return response, nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/DesolateYH/libary-yh-go/logger"
 	"github.com/gorilla/websocket"
@@ -33,7 +34,18 @@ func loopSendMemory(conn *websocket.Conn) {
 		time.Sleep(loopTime)
 		resp, err := getResp(conn)
 		if err != nil {
-			continue
+			if errors.Is(err, TokenExpireError) {
+				token, err := getToken()
+				if err != nil {
+					return
+				}
+				_conn, err := getConnection(token)
+				if err != nil {
+					return
+				}
+				conn = _conn
+			}
+			return
 		}
 		if resp.Event == eventStatus && len(resp.Args) > 0 {
 			var args statusEventArgs
