@@ -49,7 +49,6 @@ func loopSendMemory(conn *websocket.Conn) {
 			}
 
 			lastMemoryUsage = memoryUsage
-			//logger.Get().Info("asdasd", zap.Int("memoryUsage", int(memoryUsage)))
 			_, err = sendCommend(conn, Body{
 				Event: eventSendCommend,
 				Args: []string{
@@ -60,6 +59,7 @@ func loopSendMemory(conn *websocket.Conn) {
 				continue
 			}
 
+			logger.Get().Info("begin restart server")
 			err = restartServer(conn)
 			if err != nil {
 				continue

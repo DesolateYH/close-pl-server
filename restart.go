@@ -10,6 +10,7 @@ import (
 func restartServer(conn *websocket.Conn) error {
 	for i := 0; i < 2; i++ {
 		time.Sleep(time.Second * 10)
+		logger.Get().Info("send broadcast server_will_restart")
 		_, err := sendCommend(conn, Body{
 			Event: eventSendCommend,
 			Args: []string{
