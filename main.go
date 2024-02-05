@@ -1,10 +1,5 @@
 package main
 
-type Body struct {
-	Event string   `json:"event,omitempty"`
-	Args  []string `json:"args,omitempty"`
-}
-
 func main() {
 	token, err := getToken()
 	if err != nil {
