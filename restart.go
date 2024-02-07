@@ -46,6 +46,7 @@ func restartServer(conn *websocket.Conn) error {
 			return err
 		}
 		logger.Get().Info("restart server success")
+		return nil
 	}
 
 }
