@@ -22,7 +22,7 @@ func getResp(conn *websocket.Conn) (Body, error) {
 		logger.Get().Error("fail to read json", zap.Error(err))
 		return Body{}, err
 	}
-	if response.Event == eventDaemonError {
+	if response.Event == eventDaemonError || response.Event == eventJwtError {
 		logger.Get().Warn("daemon error", zap.Any("args", response.Args))
 		return Body{}, TokenExpireError
 	}

@@ -6,6 +6,7 @@ const (
 	eventAuthSuccess = "auth success"
 	eventSendCommend = "send command"
 	eventDaemonError = "daemon error"
+	eventJwtError    = "jwt error"
 )
 
 const (

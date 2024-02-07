@@ -3,12 +3,11 @@ package main
 import (
 	"github.com/DesolateYH/libary-yh-go/logger"
 	"github.com/gorilla/websocket"
-	"os"
 	"time"
 )
 
 func restartServer(conn *websocket.Conn) error {
-	for i := 0; i < 2; i++ {
+	for i := 0; i < 3; i++ {
 		time.Sleep(time.Second * 10)
 		logger.Get().Info("send broadcast server_will_restart")
 		_, err := sendCommend(conn, Body{
@@ -47,7 +46,6 @@ func restartServer(conn *websocket.Conn) error {
 			return err
 		}
 		logger.Get().Info("restart server success")
-		os.Exit(0)
 	}
 
 }

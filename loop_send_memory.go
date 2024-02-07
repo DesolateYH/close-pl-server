@@ -64,6 +64,7 @@ func loopSendMemory(conn *websocket.Conn) {
 			if err != nil {
 				continue
 			}
+			time.Sleep(time.Second * 60)
 		}
 	}
 }
