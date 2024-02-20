@@ -1,4 +1,4 @@
-package main
+package connection
 
 import (
 	"github.com/DesolateYH/libary-yh-go/logger"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func getConnection(token string) (*websocket.Conn, error) {
+func getSocketConnection(token string) (*websocket.Conn, error) {
 	dialer := &websocket.Dialer{}
 	header := http.Header{}
 
@@ -30,21 +30,6 @@ func getConnection(token string) (*websocket.Conn, error) {
 	if err != nil {
 		logger.Get().Error("fail to dial", zap.Error(err))
 		return nil, err
-	}
-
-	authReq := Body{
-		Event: "auth",
-		Args: []string{
-			token,
-		},
-	}
-	authResp, err := sendCommend(conn, authReq)
-	if err != nil {
-		return nil, err
-	}
-	if authResp.Event != eventAuthSuccess {
-		logger.Get().Error("fail to auth", zap.Any("resp", authResp))
-		return nil, FailToAuthError
 	}
 
 	return conn, nil

@@ -1,21 +1,24 @@
 package main
 
-import "os"
+import (
+	"close-pl-server/internal"
+	"os"
+)
 
 func main() {
 	cookie := os.Getenv("cookie")
 	if cookie == "" {
 		panic("cookie is empty")
 	}
-	token, err := getToken(cookie)
+	token, err := internal.getToken(cookie)
 	if err != nil {
 		panic(err)
 	}
-	conn, err := getConnection(token)
+	conn, err := internal.getConnection(token)
 	if err != nil {
 		panic(err)
 	}
 	defer conn.Close()
 
-	loopSendMemory(conn)
+	internal.loopSendMemory(conn)
 }

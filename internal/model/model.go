@@ -1,6 +1,8 @@
-package main
+package model
 
 import (
+	"close-pl-server/internal/consts"
+	"close-pl-server/internal/myerrors"
 	"encoding/json"
 	"github.com/DesolateYH/libary-yh-go/logger"
 	"go.uber.org/zap"
@@ -25,15 +27,15 @@ type Body struct {
 }
 
 func (b Body) getStatsEventArgs() (statsEventArgs, error) {
-	if b.Event != eventStats {
+	if b.Event != consts.eventStats {
 		logger.Get().Error("event status is not stats",
 			zap.Any("body", b))
-		return statsEventArgs{}, EventIsNotStatsError
+		return statsEventArgs{}, myerrors.EventIsNotStatsError
 	}
 	if len(b.Args) == 0 {
 		logger.Get().Error("args is empty",
 			zap.Any("body", b))
-		return statsEventArgs{}, ArgsIsEmptyError
+		return statsEventArgs{}, myerrors.ArgsIsEmptyError
 	}
 	var args statsEventArgs
 	err := json.Unmarshal([]byte(b.Args[0]), &args)
