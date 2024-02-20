@@ -15,7 +15,7 @@ type getTokenResp struct {
 	} `json:"data"`
 }
 
-func getToken() (string, error) {
+func getToken(cookie string) (string, error) {
 	url := "https://panel.vatzj.com/api/client/servers/661a539a-b5b5-4955-bcf6-737740a6b270/websocket"
 	method := "GET"
 
@@ -30,7 +30,7 @@ func getToken() (string, error) {
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("accept-language", "zh-CN,zh;q=0.9")
 	req.Header.Add("cache-control", "no-cache")
-	req.Header.Add("cookie", "remember_web_59ba36addc2b2f9401580f014c7f58ea4e30989d=eyJpdiI6ImRsQlZ3elFHK3RTbnV6NnB2c3JYV0E9PSIsInZhbHVlIjoiZXREWjY3N2JzM0cydU51aTFQUDhlMzNJTk92dnVSelRwQVdRcDJ5Lyt5dWlFNWp4S095bXlLb040aldIVG91ZjFHS0xDNlFkVDJOUm82SHNBZElVemlmOVhkcXdJK1RJcVVjUnllQWpZT1lZQUE0bWJKYktRZmdLYktKMyttejRRTGhoakFYZUVQUGJuQnliVmlFcFAyd2JTaHZyMjVxTGVTa3Z0VmZqbElPdlVFdGlaWnpCN2pEYkgvRzk0VEtTUC8rWWNUSjQ1UlQzZVNLUWxwMEtxMGQwSkZXK2Y5clpHSlhmTWhUTmwzST0iLCJtYWMiOiI3N2UwZmM5OWQ4OWI4MWFlOWViN2IyNGM3YzI0NThiYmI2NGI0YjQ5ZjE4OGNiYjM5YTNlM2E3M2M2YzhlMGE3IiwidGFnIjoiIn0%3D; XSRF-TOKEN=eyJpdiI6IitEdzA4WTc3Tng2NUZwMDR1ME1sU1E9PSIsInZhbHVlIjoialZBVFB4QURNcUVFT2k1MTN6TzcrYmNVL0F6YmZ5a0czamZBbzlQcEpsdjBlSGZqQ3EvUWtUWTJUa2JMY2N2eEcrbHNvaHgvZjEwQ1lXdmxrajFsb1ZIN2N5M3RwYVlmdzRtaEtWcVpzVWU3V29HcU1mWG5UYmVjdzZTclFKSFYiLCJtYWMiOiI0N2RiOTRhZDgwYmZjNWVjN2QzZDYyNGIzNGUwZTY4NmQ3NzVlMWUyMmI3YzU2ZjE2NjI0YzNhNzIyYTU2MmVmIiwidGFnIjoiIn0%3D; pterodactyl_session=eyJpdiI6ImJHWWJwWDFJdjRUNktOS1dRNVNYZmc9PSIsInZhbHVlIjoiSGRRM3hCSVBHcWZkVkIxYlpUMmNqckpzWFNGMnFtWTNhRyt1Y0lnODZIWHBWYkM5SzFLUjM0WS9QUFYzZUYzSTF2MWFaZFZweVNEL0R3SkozRlJUSjM3eXVPbTlVbE5UUlpTY0VYQ1c0Q0wrUmVhbEFmMnU0Yk1kVGFFcW0rMnkiLCJtYWMiOiI0NjU0NTkxOGEzYzVmMTliMDIzM2I2MWE2ZDFmMTQ4ZmU3YWY2M2UzNzA3ZGVhM2VlNjZiZjhhN2ZmYmIwOGU4IiwidGFnIjoiIn0%3D")
+	req.Header.Add("cookie", cookie)
 	req.Header.Add("pragma", "no-cache")
 	req.Header.Add("referer", "https://panel.vatzj.com/server/661a539a")
 	req.Header.Add("sec-ch-ua", "\"Not A(Brand\";v=\"99\", \"Brave\";v=\"121\", \"Chromium\";v=\"121\"")
