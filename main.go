@@ -1,7 +1,8 @@
 package main
 
 import (
-	"close-pl-server/internal"
+	"close-pl-server/internal/connection"
+	"close-pl-server/internal/processor"
 	"os"
 )
 
@@ -10,15 +11,11 @@ func main() {
 	if cookie == "" {
 		panic("cookie is empty")
 	}
-	token, err := internal.getToken(cookie)
+	conn, err := connection.NewConnection(cookie)
 	if err != nil {
 		panic(err)
 	}
-	conn, err := internal.getConnection(token)
-	if err != nil {
-		panic(err)
-	}
-	defer conn.Close()
+	proc := processor.NewProcessor(conn)
 
-	internal.loopSendMemory(conn)
+	proc.Run()
 }

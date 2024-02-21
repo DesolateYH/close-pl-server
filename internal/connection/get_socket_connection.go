@@ -1,6 +1,9 @@
 package connection
 
 import (
+	"close-pl-server/internal/consts"
+	"close-pl-server/internal/model"
+	"close-pl-server/internal/myerrors"
 	"github.com/DesolateYH/libary-yh-go/logger"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
@@ -26,11 +29,27 @@ func getSocketConnection(token string) (*websocket.Conn, error) {
 	header.Set("Pragma", "no-cache")
 	header.Set("Cache-Control", "no-cache")
 
-	conn, _, err := dialer.Dial("wss://pt-50.vatzj.com:8082/api/servers/661a539a-b5b5-4955-bcf6-737740a6b270/ws", header)
+	socketConn, _, err := dialer.Dial("wss://pt-50.vatzj.com:8082/api/servers/661a539a-b5b5-4955-bcf6-737740a6b270/ws", header)
 	if err != nil {
 		logger.Get().Error("fail to dial", zap.Error(err))
 		return nil, err
 	}
 
-	return conn, nil
+	conn := &connection{socketConn: socketConn}
+	authResp, err := conn.SendCommend(model.Body{
+		Event: "auth",
+		Args: []string{
+			token,
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if authResp.Event != consts.EventAuthSuccess {
+		logger.Get().Error("fail to auth", zap.Any("resp", authResp))
+		return nil, myerrors.FailToAuthError
+	}
+
+	return socketConn, nil
 }

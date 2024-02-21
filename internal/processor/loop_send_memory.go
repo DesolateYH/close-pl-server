@@ -16,28 +16,23 @@ const loopTime = time.Second * 10
 // {"event":"stats","args":["{\"cpu_absolute\":305.601,\"disk_bytes\":2675046943,\"memory_bytes\":20518100992,\"memory_limit_bytes\":25804800000,\"network\":{\"rx_bytes\":704862335,\"tx_bytes\":3384315373},\"state\":\"running\",\"uptime\":24150801}"]}
 // {"event":"console output","args":["\u003e Broadcast 3"]}
 
-func (p *processor) MonitorMemory() {
+func (p *processor) Run() {
 	lastMemoryUsage := float64(0)
 	logger.Get().Info("begin loop send memory")
 	for {
 		time.Sleep(loopTime)
-		resp, err := connection.GetResp(p.conn)
+		resp, err := p.connection.GetResp()
 		if err != nil {
 			if errors.Is(err, myerrors.TokenExpireError) {
-				token, err := getToken()
+				err := p.connection.Refresh()
 				if err != nil {
 					return
 				}
-				_conn, err := getConnection(token)
-				if err != nil {
-					return
-				}
-				conn = _conn
 			}
 			return
 		}
 		if resp.Event == consts.EventStats && len(resp.Args) > 0 {
-			args, err := resp.getStatsEventArgs()
+			args, err := resp.GetStatsEventArgs()
 			if err != nil {
 				continue
 			}
@@ -52,7 +47,7 @@ func (p *processor) MonitorMemory() {
 			}
 
 			lastMemoryUsage = memoryUsage
-			_, err = connection.SendCommend(conn, model.Body{
+			_, err = p.connection.SendCommend(model.Body{
 				Event: consts.EventSendCommend,
 				Args: []string{
 					fmt.Sprintf("Broadcast current_memory_useage_%.2f%%", memoryUsage),
@@ -63,7 +58,7 @@ func (p *processor) MonitorMemory() {
 			}
 
 			logger.Get().Info("begin restart server")
-			err = restartServer(conn)
+			err = p.connection.RestartServer()
 			if err != nil {
 				continue
 			}

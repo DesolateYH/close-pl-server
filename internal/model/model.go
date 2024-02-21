@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type statsEventArgs struct {
+type StatsEventArgs struct {
 	CpuAbsolute      float64 `json:"cpu_absolute"`
 	DiskBytes        int64   `json:"disk_bytes"`
 	MemoryBytes      int64   `json:"memory_bytes"`
@@ -26,23 +26,23 @@ type Body struct {
 	Args  []string `json:"args,omitempty"`
 }
 
-func (b Body) getStatsEventArgs() (statsEventArgs, error) {
-	if b.Event != consts.eventStats {
+func (b Body) GetStatsEventArgs() (StatsEventArgs, error) {
+	if b.Event != consts.EventStats {
 		logger.Get().Error("event status is not stats",
 			zap.Any("body", b))
-		return statsEventArgs{}, myerrors.EventIsNotStatsError
+		return StatsEventArgs{}, myerrors.EventIsNotStatsError
 	}
 	if len(b.Args) == 0 {
 		logger.Get().Error("args is empty",
 			zap.Any("body", b))
-		return statsEventArgs{}, myerrors.ArgsIsEmptyError
+		return StatsEventArgs{}, myerrors.ArgsIsEmptyError
 	}
-	var args statsEventArgs
+	var args StatsEventArgs
 	err := json.Unmarshal([]byte(b.Args[0]), &args)
 	if err != nil {
 		logger.Get().Error("fail to unmarshal statusEventArgs",
 			zap.Error(err))
-		return statsEventArgs{}, err
+		return StatsEventArgs{}, err
 	}
 
 	return args, nil

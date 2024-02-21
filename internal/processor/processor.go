@@ -1,16 +1,17 @@
 package processor
 
-import "github.com/gorilla/websocket"
+import (
+	"close-pl-server/internal/connection"
+)
 
 type Processor interface {
-	MonitorMemory()
+	Run()
 }
 
 type processor struct {
-	cookie string
-	conn   *websocket.Conn
+	connection connection.Connection
 }
 
-func NewProcessor(cookie string, conn *websocket.Conn) Processor {
-	return &processor{cookie: cookie, conn: conn}
+func NewProcessor(connection connection.Connection) Processor {
+	return &processor{connection: connection}
 }
